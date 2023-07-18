@@ -1,0 +1,2 @@
+# Cameo
+Camera controlling tool.
