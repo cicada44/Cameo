@@ -14,6 +14,11 @@ public:
     WindowManager(const std::string& windowName);
 
     /**
+     * @brief Destroyes the windows.
+     */
+    ~WindowManager();
+
+    /**
      * @brief Returns a copy of std::string windowName.
      *
      * @return std::string - name of window.

@@ -15,6 +15,22 @@ TEST(Manager, WindowManager) {
     winManager.destroyWindow();
 }
 
+TEST(Manager, CaptureManager) {
+    cv::VideoCapture cam(0);
+    Managers::WindowManager winManager("test");
+    winManager.createWindow();
+    Managers::CaptureManager capManager(cam, winManager);
+    ASSERT_FALSE(capManager.get_mirrored());
+    capManager.set_mirrored(true);
+    ASSERT_TRUE(capManager.get_mirrored());
+    capManager.enterFrame();
+    ASSERT_FALSE(capManager.frame().empty());
+    ASSERT_FALSE(capManager.isWritingImage());
+    ASSERT_FALSE(capManager.isWritingVideo());
+    capManager.startWritingVideo("test.avi");
+    ASSERT_TRUE(capManager.isWritingVideo());
+}
+
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

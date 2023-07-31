@@ -6,8 +6,8 @@
 
 namespace Managers {
 
-#define HD_SIZE_WIDTH 1280
-#define HD_SIZE_HEIGTH 720
+#define HD_SIZE_WIDTH 1024
+#define HD_SIZE_HEIGTH 768
 
 WindowManager::WindowManager(const std::string& windowName)
     : windowName_(windowName), isWindowCreated_(false) {}
@@ -37,6 +37,8 @@ CaptureManager::CaptureManager(cv::VideoCapture& cam, WindowManager& winManager,
     : winManager_(winManager),
       vidCapturer_(cam),
       shouldMirrored_(shouldMirrored) {}
+
+WindowManager::~WindowManager() { cv::destroyWindow(windowName_); }
 
 bool CaptureManager::get_mirrored() const { return shouldMirrored_; }
 
@@ -82,12 +84,12 @@ void CaptureManager::exitFrame() {
     ++framesElapsed_;
 
     if (winManager_.isWindowCreated()) {
+        cv::resize(frame_, frame_, cv::Size(HD_SIZE_WIDTH, HD_SIZE_HEIGTH));
         if (shouldMirrored_) {
             cv::Mat mirroredFrame;
             cv::flip(frame_, mirroredFrame, 1);
             winManager_.show(mirroredFrame);
         } else {
-            cv::resize(frame_, frame_, cv::Size(HD_SIZE_WIDTH, HD_SIZE_HEIGTH));
             winManager_.show(frame_);
         }
     }
@@ -125,6 +127,10 @@ void CaptureManager::writeVideoFrame() {
 
             cv::Size winSize(int(vidCapturer_.get(cv::CAP_PROP_FRAME_WIDTH)),
                              int(vidCapturer_.get(cv::CAP_PROP_FRAME_HEIGHT)));
+
+            std::cerr << int(vidCapturer_.get(cv::CAP_PROP_FRAME_WIDTH)) << ' '
+                      << int(vidCapturer_.get(cv::CAP_PROP_FRAME_HEIGHT))
+                      << '\n';
 
             vidWriter_ =
                 cv::VideoWriter(vidFilename_, vidEncoding_, fps, winSize);
