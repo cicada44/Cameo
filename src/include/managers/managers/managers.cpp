@@ -38,8 +38,6 @@ CaptureManager::CaptureManager(cv::VideoCapture& cam, WindowManager& winManager,
       vidCapturer_(cam),
       shouldMirrored_(shouldMirrored) {}
 
-WindowManager::~WindowManager() { cv::destroyWindow(windowName_); }
-
 bool CaptureManager::get_mirrored() const { return shouldMirrored_; }
 
 void CaptureManager::set_mirrored(const bool shMirrored) {
