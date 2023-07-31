@@ -11,6 +11,8 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 find_program(CLANG_TIDY_EXE NAMES "clang-tidy" REQUIRED)
 
+find_package(OpenCV REQUIRED)
+
 add_subdirectory(src)
 add_subdirectory(test)
 add_subdirectory(external)

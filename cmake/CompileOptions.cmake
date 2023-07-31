@@ -2,7 +2,8 @@ function(set_compile_options target_name)
     if(MSVC)
         target_compile_options(${target_name} PRIVATE /W4 /WX)
     else()
-        target_compile_options(${target_name} PRIVATE -Wall -Wextra -Werror -pedantic -lopencv_core
+        target_compile_options(${target_name} PRIVATE -Wall -Wextra -Werror -pedantic
+        -lopencv_core
         -lopencv_imgproc
         -lopencv_highgui
         -lopencv_ml
@@ -12,7 +13,8 @@ function(set_compile_options target_name)
         -lopencv_objdetect
         -lopencv_contrib
         -lopencv_legacy
-        -lopencv_flann)
+        -lopencv_flann
+        )
     endif()
 
     set_target_properties(

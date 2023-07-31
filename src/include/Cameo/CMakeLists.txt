@@ -1,21 +1,19 @@
-set(target_name cameo)
+set(target_name cameowrapper)
 
-add_executable(${target_name})
+add_library(
+    ${target_name}
+    STATIC
+        Cameo/Cameo.cpp
+        Cameo/Cameo.hpp
+)
 
 include(CompileOptions)
 set_compile_options(${target_name})
-
-target_sources(
-    ${target_name}
-    PRIVATE
-        src/main.cpp
-)
 
 target_include_directories(
     ${target_name}
     PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
-        ${OpenCV_INCLUDE_DIRS}
 )
 
 target_link_libraries(
@@ -23,5 +21,4 @@ target_link_libraries(
     PRIVATE
         ${OpenCV_LIBS}
         managers
-        cameowrapper
 )
