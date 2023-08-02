@@ -8,6 +8,8 @@ namespace Managers {
 
 class WindowManager {
 public:
+    bool isButtonClicked_;
+
     /**
      * @brief Constructs a WindowManager that manages the window.
      */
@@ -23,7 +25,7 @@ public:
     /**
      * @brief Returns a window state.
      *
-     * @return true if window is created, otherwise - fase.
+     * @return true if window is created, otherwise - false.
      */
     bool isWindowCreated() const;
 
@@ -51,6 +53,8 @@ public:
 private:
     std::string windowName_;
     bool isWindowCreated_;
+
+    // void onMouse(int state, void* userdata);
 };
 
 class CaptureManager {
@@ -64,9 +68,11 @@ public:
      * otherwise - false (default).
      */
     CaptureManager(cv::VideoCapture& cam, WindowManager& winManager,
-                   const bool shouldMirrored = false);
+                   const bool shouldMirrored = false,
+                   const bool shouldGblure = false,
+                   const bool shouldMBlure = false);
 
-    /* @return shouldMirrored attribute current state. */
+    /** @return shouldMirrored attribute current state. */
     bool get_mirrored() const;
 
     /**
@@ -75,12 +81,12 @@ public:
      */
     void set_mirrored(const bool shMirrored);
 
-    /* @return number of channels. */
+    /** @return number of channels. */
     int get_channel() const;
 
     /**
      * @brief Set `channels` attribute to a new value.
-     * @param channels new value for `channels attribute`.
+     * @param channels new value for `channels` attributed.
      */
     void set_channel(const int channels);
 
@@ -91,6 +97,24 @@ public:
      */
     void set_ImageFilename(const std::string& filename);
 
+    /** @return shouldGaussianBlure parameter. */
+    bool get_Gbluring() const;
+
+    /**
+     * @brief Set `shouldGaussianBluring` attribute to a new value.
+     * @param channels new value for `shouldGaussianBluring` attribute.
+     */
+    void set_Gbluring(const bool sGb);
+
+    /** @return shouldMBlure parameter. */
+    bool get_Mbluring() const;
+
+    /**
+     * @brief Set `shouldMBluring` attribute to a new value.
+     * @param channels new value for `shouldMBluring` attribute.
+     */
+    void set_Mbluring(const bool sMb);
+
     /**
      * @brief Returns frame retrieved from camera. If there's no frame - does
      * nothing.
@@ -98,10 +122,10 @@ public:
      */
     cv::Mat frame();
 
-    /* @return isWritingImage attribute. */
+    /** @return isWritingImage attribute. */
     bool isWritingImage() const;
 
-    /* @return isWritingVideo attribute. */
+    /** @return isWritingVideo attribute. */
     bool isWritingVideo() const;
 
     /**
@@ -114,7 +138,9 @@ public:
      */
     void exitFrame();
 
-    /** Starts writing video with filename `filename` and codec `encoding`.
+    /**
+     * @brief Starts writing video with filename `filename` and codec
+     * `encoding`.
      * @param filename name for output file.
      * @param encoding file codec for video, default - I420.
      */
@@ -135,9 +161,14 @@ private:
     std::time_t startTime_;
     std::string imgFilename_, vidFilename_;
     int channel_, framesElapsed_, fpsEstimate_, vidEncoding_;
-    bool shouldMirrored_, isFrameEntered_;
+    bool shouldMirrored_, isFrameEntered_, shouldGblured_, shouldMBlured_;
 
     void writeVideoFrame();
+};
+
+class ButtonManager {
+public:
+private:
 };
 
 }  // namespace Managers

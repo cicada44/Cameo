@@ -17,7 +17,7 @@ std::string WindowManager::getWindowName() const { return windowName_; }
 bool WindowManager::isWindowCreated() const { return isWindowCreated_; }
 
 void WindowManager::createWindow() {
-    cv::namedWindow(windowName_);
+    cv::namedWindow(windowName_, cv::WINDOW_NORMAL);
     isWindowCreated_ = true;
 }
 
@@ -33,16 +33,27 @@ void WindowManager::destroyWindow() {
 int WindowManager::getProcessEvent() const { return cv::waitKey(1); }
 
 CaptureManager::CaptureManager(cv::VideoCapture& cam, WindowManager& winManager,
-                               const bool shouldMirrored)
+                               const bool shouldMirrored,
+                               const bool shouldGblure, const bool shouldMblure)
     : winManager_(winManager),
       vidCapturer_(cam),
-      shouldMirrored_(shouldMirrored) {}
+      shouldMirrored_(shouldMirrored),
+      shouldGblured_(shouldGblure),
+      shouldMBlured_(shouldMblure) {}
 
 bool CaptureManager::get_mirrored() const { return shouldMirrored_; }
 
 void CaptureManager::set_mirrored(const bool shMirrored) {
     shouldMirrored_ = shMirrored;
 }
+
+bool CaptureManager::get_Gbluring() const { return shouldGblured_; }
+
+void CaptureManager::set_Gbluring(const bool sGb) { shouldGblured_ = sGb; }
+
+bool CaptureManager::get_Mbluring() const { return shouldGblured_; }
+
+void CaptureManager::set_Mbluring(const bool sMb) { shouldGblured_ = sMb; }
 
 int CaptureManager::get_channel() const { return channel_; }
 
@@ -82,14 +93,14 @@ void CaptureManager::exitFrame() {
     ++framesElapsed_;
 
     if (winManager_.isWindowCreated()) {
-        cv::resize(frame_, frame_, cv::Size(HD_SIZE_WIDTH, HD_SIZE_HEIGTH));
-        if (shouldMirrored_) {
-            cv::Mat mirroredFrame;
-            cv::flip(frame_, mirroredFrame, 1);
-            winManager_.show(mirroredFrame);
-        } else {
-            winManager_.show(frame_);
-        }
+        if (shouldMirrored_)
+            cv::flip(frame_, frame_, 1);
+        if (shouldGblured_) 
+            cv::GaussianBlur(frame_, frame_, cv::Size(13, 13), 0);
+        if (shouldMBlured_) 
+            cv::medianBlur(frame_, frame_, 13);
+
+        winManager_.show(frame_);
     }
 
     if (isWritingImage()) cv::imwrite(imgFilename_, frame_);

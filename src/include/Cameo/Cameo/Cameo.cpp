@@ -42,6 +42,18 @@ void CameoWrapper::onKeypress(const int keycode) {
                 : capManager_.set_mirrored(true);
             break;
 
+        case 103: /* 'g`  key.*/
+            (capManager_.get_Gbluring() == true)
+                ? capManager_.set_Gbluring(false)
+                : capManager_.set_Gbluring(true);
+            break;
+
+        case 104: /* 'h' key. */
+            (capManager_.get_Mbluring() == true)
+                ? capManager_.set_Mbluring(false)
+                : capManager_.set_Mbluring(true);
+            break;
+
         default:
             break;
     }

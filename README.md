@@ -30,4 +30,6 @@ Cameo is an application for controlling and showing camera frames while also pro
 - **TAB**: Start/stop writing video.
 - **Space**: Write image.
 - **'m'**: Set/unset frames to mirrored state.
+- **'g'**: Set/unset Gaussian bluring.
+- **'h'**: Set/unset Median bluring.
 
