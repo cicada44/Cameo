@@ -32,4 +32,5 @@ Cameo is an application for controlling and showing camera frames while also pro
 - **'m'**: Set/unset frames to mirrored state.
 - **'g'**: Set/unset Gaussian bluring.
 - **'h'**: Set/unset Median bluring.
-
+- **'f'**: Show photo with Fourier transform.
+- **'s'**: Sharp frames.

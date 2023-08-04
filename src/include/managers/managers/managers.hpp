@@ -13,11 +13,10 @@ public:
     /**
      * @brief Constructs a WindowManager that manages the window.
      */
-    WindowManager(const std::string& windowName);
+    WindowManager(const std::string& windowName, int abBottom = 0);
 
     /**
      * @brief Returns a copy of std::string windowName.
-     *
      * @return std::string - name of window.
      */
     std::string getWindowName() const;
@@ -35,9 +34,40 @@ public:
     void createWindow();
 
     /**
+     * @brief Creates new window with particular name.
+     * @param name name of new window.
+     */
+    void createParticularWindow(const std::string& name);
+
+    /**
+     * @brief Creates a trackbar object.
+     * @param name name for bar.
+     */
+    void createTrackbar(const std::string& name);
+
+    /**
+     * @brief Destroyes window with particular name.
+     * @param name window name that should be destroyed.
+     */
+    void destroyParticularWindow(const std::string& name);
+
+    /**
+     * @brief Show frame in particular window.
+     * @param image image to show.
+     * @param winname name of window to show image.
+     */
+    void showInParticularWindow(cv::Mat& image, const std::string& winname);
+
+    /**
      * @brief Shows frame in created window.
      */
     void show(const cv::Mat& frame) const;
+
+    /** @return Adjust value. */
+    int get_contrast() const;
+
+    /** @brief Sets new value to the adjust parameter. */
+    void set_contrast(int newAdjust);
 
     /**
      * @brief Destroyes window.
@@ -53,8 +83,20 @@ public:
 private:
     std::string windowName_;
     bool isWindowCreated_;
+    int contrastVal_;
 
-    // void onMouse(int state, void* userdata);
+    /**
+     * @brief Changes trackbar value.
+     * @param value new value for trackbar.
+     */
+    void onTrackbar(int value);
+
+    /**
+     * @brief Wrapper of onTrackbar function.
+     * @param value new value for trackbar.
+     * @param userdata `this` argument.
+     */
+    static void onTrackbarStatic(int value, void* userdata);
 };
 
 class CaptureManager {
@@ -67,10 +109,9 @@ public:
      * @param shouldMirrored true - if showing frame should be mirrored,
      * otherwise - false (default).
      */
-    CaptureManager(cv::VideoCapture& cam, WindowManager& winManager,
-                   const bool shouldMirrored = false,
-                   const bool shouldGblure = false,
-                   const bool shouldMBlure = false);
+    CaptureManager(cv::VideoCapture& cam, WindowManager& winManager, const bool shouldMirrored = false,
+                   const bool shouldGblure = false, const bool shouldMBlure = false, const bool shouldFT = false,
+                   const bool shouldSh = false);
 
     /** @return shouldMirrored attribute current state. */
     bool get_mirrored() const;
@@ -116,6 +157,24 @@ public:
     void set_Mbluring(const bool sMb);
 
     /**
+     * @brief Set `shouldFourieTransform` attribute to a new value.
+     * @param channels new value for `shouldFourieTransform` attribute.
+     */
+    void set_FT(const bool sFt);
+
+    /** @return shouldFourieTransform parameter. */
+    bool get_FT() const;
+
+    /**
+     * @brief Set `shouldSharp` attribute to a new value.
+     * @param channels new value for `shouldSharp` attribute.
+     */
+    void set_sh(const bool sFt);
+
+    /** @return shouldSharp parameter. */
+    bool get_sh() const;
+
+    /**
      * @brief Returns frame retrieved from camera. If there's no frame - does
      * nothing.
      * @return cv::Mat frame from camera.
@@ -136,7 +195,7 @@ public:
     /**
      * @brief Process class state when exit from frame.
      */
-    void exitFrame();
+    void exitFrame(int adjust);
 
     /**
      * @brief Starts writing video with filename `filename` and codec
@@ -144,9 +203,7 @@ public:
      * @param filename name for output file.
      * @param encoding file codec for video, default - I420.
      */
-    void startWritingVideo(const std::string& filename,
-                           int encoding = cv::VideoWriter::fourcc('I', '4', '2',
-                                                                  '0'));
+    void startWritingVideo(const std::string& filename, int encoding = cv::VideoWriter::fourcc('I', '4', '2', '0'));
 
     /**
      * @brief This does what you think it does.
@@ -161,9 +218,22 @@ private:
     std::time_t startTime_;
     std::string imgFilename_, vidFilename_;
     int channel_, framesElapsed_, fpsEstimate_, vidEncoding_;
-    bool shouldMirrored_, isFrameEntered_, shouldGblured_, shouldMBlured_;
+    bool shouldMirrored_, isFrameEntered_, shouldGblured_, shouldMBlured_, shouldMakeFourieT_, shouldSharped_;
 
+    /**
+     * @brief Writes video frame if needed.
+     */
     void writeVideoFrame();
+
+    /**
+     * @brief Does and shows Fourie transformation result.
+     */
+    void showFourieTransformed();
+
+    /**
+     * @brief Processes image with should* parameters.
+     */
+    void preProcessImage(int contrast);
 };
 
 class ButtonManager {
