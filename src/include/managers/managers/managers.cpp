@@ -10,8 +10,10 @@ namespace Managers {
 #define HD_SIZE_HEIGTH 768
 
 #define LABEL_TRANSFORM_FOURIE "Transformed"
+#define BAR_CONTRAST_NAME "Contrast"
+#define BAR_BRIGHTNESS_NAME "Brightness"
 
-#define CONTRAST_HIGHER_VAL 100
+#define CONTRAST_N_BRIGHTNESS_HIGHER_VAL 100
 
 /**
  * @brief Does Fourier transform of inputImage.
@@ -70,8 +72,8 @@ void sharp(const cv::Mat& inputImg, cv::Mat& outputImg) {
     outputImg.col(outputImg.cols - 1).setTo(cv::Scalar(0));
 }
 
-WindowManager::WindowManager(const std::string& windowName, int contrastVal)
-    : windowName_(windowName), isWindowCreated_(false), contrastVal_(contrastVal) {}
+WindowManager::WindowManager(const std::string& windowName, const int contrast, const int brightnessVal)
+    : windowName_(windowName), isWindowCreated_(false), contrastVal_(contrast), brightnessVal_(brightnessVal) {}
 
 std::string WindowManager::getWindowName() const { return windowName_; }
 
@@ -84,9 +86,13 @@ void WindowManager::createWindow() {
 
 void WindowManager::createParticularWindow(const std::string& name) { cv::namedWindow(name, cv::WINDOW_NORMAL); }
 
-void WindowManager::createTrackbar(const std::string& name) {
-    if (isWindowCreated_)
-        cv::createTrackbar(name, windowName_, &contrastVal_, CONTRAST_HIGHER_VAL, onTrackbarStatic, this);
+void WindowManager::createTrackbar(const std::string& name, const int upperVal) {
+    if (isWindowCreated_) cv::createTrackbar(name, windowName_, &contrastVal_, upperVal, onTrackbarStatic, this);
+}
+
+void WindowManager::createAllTrackbars() {
+    createTrackbar("Brightness", CONTRAST_N_BRIGHTNESS_HIGHER_VAL);
+    createTrackbar("Contrast", CONTRAST_N_BRIGHTNESS_HIGHER_VAL);
 }
 
 void WindowManager::onTrackbar(int value) { contrastVal_ = value; }
@@ -99,6 +105,10 @@ void WindowManager::onTrackbarStatic(int value, void* userdata) {
 int WindowManager::get_contrast() const { return contrastVal_; }
 
 void WindowManager::set_contrast(int newcontrast) { contrastVal_ = newcontrast; }
+
+int WindowManager::get_brightness() const { return brightnessVal_; }
+
+void WindowManager::set_brightness(const int newbrightness) { brightnessVal_ = newbrightness; }
 
 void WindowManager::destroyParticularWindow(const std::string& name) { cv::destroyWindow(name); }
 
@@ -164,7 +174,7 @@ void CaptureManager::enterFrame() {
     if (vidCapturer_.isOpened()) isFrameEntered_ = vidCapturer_.grab();
 }
 
-void CaptureManager::exitFrame(int contrast) {
+void CaptureManager::exitFrame(const int contrast, const int brightness) {
     if (frame_.empty()) {
         isFrameEntered_ = false;
         return;
@@ -180,7 +190,7 @@ void CaptureManager::exitFrame(int contrast) {
     ++framesElapsed_;
 
     if (winManager_.isWindowCreated()) {
-        preProcessImage(contrast);
+        preProcessImage(contrast, brightness);
         winManager_.show(frame_);
     }
 
@@ -199,13 +209,15 @@ void CaptureManager::showFourieTransformed() {
     shouldMakeFourieT_ = false;
 }
 
-void CaptureManager::preProcessImage(int contrast) {
+void CaptureManager::preProcessImage(const int contrast, const int brightness) {
     if (shouldMirrored_) cv::flip(frame_, frame_, 1);
     if (shouldGblured_) cv::GaussianBlur(frame_, frame_, cv::Size(13, 13), 0);
     if (shouldMBlured_) cv::medianBlur(frame_, frame_, 13);
     if (shouldMakeFourieT_) showFourieTransformed();
     if (shouldSharped_) sharp(frame_, frame_);
-    cv::convertScaleAbs(frame_, frame_, 1.0 * contrast / 10, 10);
+    frame_.convertTo(frame_, CV_32F);
+    cv::convertScaleAbs(frame_, frame_, 1.0 + contrast / 10, brightness);
+    frame_.convertTo(frame_, CV_8U);
 }
 
 void CaptureManager::startWritingVideo(const std::string& filename, int encoding) {

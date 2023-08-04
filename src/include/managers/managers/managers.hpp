@@ -13,7 +13,7 @@ public:
     /**
      * @brief Constructs a WindowManager that manages the window.
      */
-    WindowManager(const std::string& windowName, int abBottom = 0);
+    WindowManager(const std::string& windowName, const int contrastVal = 0, const int brightnessVal = 0);
 
     /**
      * @brief Returns a copy of std::string windowName.
@@ -43,7 +43,12 @@ public:
      * @brief Creates a trackbar object.
      * @param name name for bar.
      */
-    void createTrackbar(const std::string& name);
+    void createTrackbar(const std::string& name, const int upperVal);
+
+    /**
+     * @brief Create all trackbars.
+     */
+    void createAllTrackbars();
 
     /**
      * @brief Destroyes window with particular name.
@@ -63,11 +68,17 @@ public:
      */
     void show(const cv::Mat& frame) const;
 
-    /** @return Adjust value. */
+    /** @return Contrast value. */
     int get_contrast() const;
 
-    /** @brief Sets new value to the adjust parameter. */
-    void set_contrast(int newAdjust);
+    /** @brief Sets new value to the contrast parameter. */
+    void set_contrast(int newContrast);
+
+    /** @return Brightness value. */
+    int get_brightness() const;
+
+    /** @brief Sets new value to the brightness parameter. */
+    void set_brightness(int newBrightness);
 
     /**
      * @brief Destroyes window.
@@ -83,7 +94,7 @@ public:
 private:
     std::string windowName_;
     bool isWindowCreated_;
-    int contrastVal_;
+    int contrastVal_, brightnessVal_;
 
     /**
      * @brief Changes trackbar value.
@@ -195,7 +206,7 @@ public:
     /**
      * @brief Process class state when exit from frame.
      */
-    void exitFrame(int adjust);
+    void exitFrame(const int adjust, const int brightness);
 
     /**
      * @brief Starts writing video with filename `filename` and codec
@@ -233,7 +244,7 @@ private:
     /**
      * @brief Processes image with should* parameters.
      */
-    void preProcessImage(int contrast);
+    void preProcessImage(const int contrast, const int brightness);
 };
 
 class ButtonManager {

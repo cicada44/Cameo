@@ -13,11 +13,11 @@ CameoWrapper::CameoWrapper(Managers::CaptureManager& cM, Managers::WindowManager
 
 void CameoWrapper::run() {
     winManager_.createWindow();
-    winManager_.createTrackbar("Adjust and brightness");
+    winManager_.createAllTrackbars();
     while (winManager_.isWindowCreated()) {
         capManager_.enterFrame();
         cv::Mat frame = capManager_.frame();
-        capManager_.exitFrame(winManager_.get_contrast());
+        capManager_.exitFrame(winManager_.get_contrast(), winManager_.get_brightness());
         onKeypress(winManager_.getProcessEvent());
     }
 }
